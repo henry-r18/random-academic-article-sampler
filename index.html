@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Article Sampler</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.css" />
+    <script type="importmap">
+        {
+          "imports": {
+            "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
+          }
+        }
+      </script>
+</head>
+
+<body>
+    <div id="app">
+        <section class="section">
+            <div class="columns">
+                <div class="column is-one-third">
+                    <div class="box">
+                        
+                        <div class="field">
+                          <label class="label">ISSN</label>
+                          <p class="control">
+                            <input class="input" type="text" placeholder="Enter ISSN(s)..." v-model="issns" :disabled="isLoading">
+                          </p>
+                        </div>
+                        
+                        <div class="field">
+                          <label class="label">Sample Size</label>
+                          <p class="control">
+                            <input class="input" type="number" min="1" max="100" placeholder="Enter sample size..." v-model="sampleSize" :disabled="isLoading">
+                          </p>
+                        </div>
+                        
+                        <div class="field">
+                          <label class="label">Start Date</label>
+                          <p class="control">
+                            <input class="input" type="date" placeholder="Select start date..." v-model="startDate" :disabled="isLoading">
+                          </p>
+                        </div>
+                        
+                        <div class="field is-grouped">
+                          <p class="control">
+                            <button class="button is-primary" @click="submitForm" :disabled="isLoading">Submit</button>
+                          </p>
+                          <p class="control">
+                            <button class="button is-link" :disabled="isLoading" @click="resetForm">Clear</button>
+                          </p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="columns">
+                <div class="column is-10">
+                    <div class="box">
+
+                        <div class="container">
+                            <h3 class="title">Sample Preview</h3>
+
+                            <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth" v-if="showTable && !isLoading">
+                                <thead>
+                                    <tr>
+                                        <th>URL</th>
+                                        <th>Title</th>
+                                        <th>Authors</th>
+                                        <th>Year</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="sampleItem in sample">
+                                        <td><a :href="sampleItem.URL" target="_blank">{{ sampleItem.URL }}</a></td>
+                                        <td>{{ sampleItem.title[0].slice(0, 31) }}</td>
+                                        <td>{{ sampleItem.author[0].given }} {{ sampleItem.author[0].family }} {{ sampleItem.author.length > 1 ? '<i>et al</i>' : '' }}</td>
+                                        <td>{{ sampleItem['issued']['date-parts'][0][0] }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="container has-text-centered" v-if="isLoading">
+                            <p>Loading...</p>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="column is-2">
+                    <div class="field">
+                        <p class="control">
+                            <button class="button is-grey is-outlined" @click="downloadAsJson" :disabled="!showTable && !isLoading">Download JSON</button>
+                        </p>
+                        <p class="help">Download the full sample of articles as JSON</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <a id="downloadAnchor" style="display:none" :href="encodeJSONDownloadURI" download="sample.json"></a>
+    </div>
+</body>
+
+<script type="module">
+    import { createApp } from 'vue';
+    import { createRequests, fetchSample } from '/sampler.js';
+
+    createApp({
+        data() {
+            return {
+                issns: '1538-4357',
+                sampleSize: 10,
+                startDate: '2017-01-01',
+                sample: null,
+                isLoading: false,
+                showTable: false
+            }
+        },
+        computed: {
+            encodeJSONDownloadURI() {
+                let data = `data:text/json;charset=utf-8,${ JSON.stringify( this.sample )}`;
+                return encodeURI(data);
+            }
+        },
+        methods: {
+            toggleIsLoading() {
+                this.isLoading = !this.isLoading;
+            },
+            submitForm() {
+                this.toggleIsLoading();
+                let requests = createRequests( [this.issns], this.startDate, this.sampleSize );
+                fetchSample(requests)
+                    .then( sample => {
+                        this.sample = sample[0];
+                        this.toggleIsLoading();
+                        this.showTable = true;
+                    })
+                    .catch( error => error.message );
+            },
+            downloadAsJson() {
+                document.getElementById('downloadAnchor').click();
+            },
+            resetForm() {
+                this.showTable = false;
+                this.issns = null;
+                this.sampleSize = null;
+                this.startDate = null;
+            }
+        },
+    }).mount('#app');
+</script>
+
+<style>
+    table {
+        margin: auto;
+    }
+</style>
+
+</html>
