@@ -44,6 +44,14 @@
                             <input class="input" type="date" placeholder="Select start date..." v-model="startDate" :disabled="isLoading">
                           </p>
                         </div>
+
+                        <div class="field">
+                            <label class="label">Email</label>
+                            <p class="control">
+                            <input class="input" type="email" placeholder="(Optional) Enter email..." v-model="email" :disabled="isLoading">
+                            </p>
+                            <p class="help">Optional, for identifying yourself to Crossref API</p>
+                        </div>
                         
                         <div class="field is-grouped">
                           <p class="control">
@@ -57,17 +65,16 @@
                     </div>
                 </div>
 
-                <div class="column is-one-third">
-                    <div class="box">
-
-                        <div class="field">
-                            <label class="label">Email</label>
-                            <p class="control">
-                            <input class="input" type="email" placeholder="(Optional) Enter email..." v-model="email" :disabled="isLoading">
-                            </p>
-                            <p class="help">Optional, for identifying yourself to Crossref API</p>
-                        </div>
-
+                <div class="column is-two-thirds">
+                    <div class="content">
+                        <h1>Instructions</h1>
+                        <p>
+                            Enter the ISSN(s) of the journal(s) you would like to sample, the sample size (up to 100, same sample size for each journal), the starting date for the sample (i.e. the earliest publication date you would accept in the sample), and optionally, your email address to identify yourself to the Crossref API.
+                        </p>
+                        
+                        <p>
+                            The web app displays a preview of the sample returned from the Crossref REST API. You can download the complete sample as JSON, which contains an array of <a href="https://www.crossref.org/documentation/retrieve-metadata/rest-api">Crossref Work</a> objects nested in an array corresponding to each ISSN.
+                        </p>
                     </div>
                 </div>
             </div>
