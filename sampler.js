@@ -1,13 +1,13 @@
-export const createRequests = ( journals, startDate, sampleSize ) => {
+export const createRequests = ( journals, startDate, sampleSize, email ) => {
     let requests = journals.map( journal => {
         let path = `journals/${journal}/works`;
         let query = `sample=${sampleSize}&filter=from-pub-date:${startDate}`;
+        if (email) {
+            query += `&mailto=${email}`;
+        };
         let uri = `https://api.crossref.org/${path}?${query}`;
-        
-        let politeHeader = new Headers();
-        politeHeader.append('User-Agent', 'ArticleSampler/0.9 (mailto:herosen@g.ucla.edu)')
 
-        return new Request(uri, politeHeader);
+        return new Request(uri);
     });
     
     return requests;
