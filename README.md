@@ -6,3 +6,6 @@ Enter the ISSN of the journal you would like to sample, the sample size (up to 1
 
 ## GitHub Pages site
 Here is a [GitHub Pages](https://henry-r18.github.io/random-academic-article-sampler/) site serving the sampler.
+
+## Python script
+The Python file (articleSampler.py) accomplishes nearly the same thing as the JavaScript app, but without a front-end. It also returns more limited metadata and outputs CSV rather than JSON.
