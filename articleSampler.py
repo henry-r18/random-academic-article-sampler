@@ -18,7 +18,10 @@ for issn in issns:
         sample = []
         authorList = []
         for author in item['author']:
-            authorList.append(author['given'] + ' ' + author['family'])
+            if 'given' in author.keys():
+              authorList.append(author['given'] + ' ' + author['family'])
+            else:
+              authorList.append(author['name'])
         samples.append([
             item['URL'],
             item['title'][0],
