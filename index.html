@@ -156,7 +156,7 @@
         watch: {
             issns(issnsString) {
                 if (issnsString) {
-                    this.issns = issnsString.split(',')
+                    this.issns = issnsString.trim().split(',')
                 }
             }
         },
